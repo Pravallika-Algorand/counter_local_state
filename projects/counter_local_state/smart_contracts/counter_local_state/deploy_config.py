@@ -28,9 +28,26 @@ def deploy(
         on_schema_break=algokit_utils.OnSchemaBreak.AppendApp,
         on_update=algokit_utils.OnUpdate.AppendApp,
     )
-    name = "world"
-    response = app_client.hello(name=name)
-    logger.info(
-        f"Called hello on {app_spec.contract.name} ({app_client.app_id}) "
-        f"with name={name}, received: {response.return_value}"
-    )
+
+    logger.info(f"Deployed Counter app with app_id: {app_client.app_id}")
+
+    try:
+        result = app_client.opt_in_opt_out()
+        logger.info(f"opted in deployer account [{deployer.address}] with results: {result.tx_id}")
+    except:
+        logger.info("Deployer account")
+
+    localState = app_client.get_local_state(deployer.address)
+    logger.info(f"Local state for deployer account [{deployer.address}]: {localState.counter}")
+
+    result = app_client.increment()
+    logger.info(f"Incremented counter with result: {result.tx_id}")
+
+    localState = app_client.get_local_state(deployer.address)
+    logger.info(f"Local state for deployer account [{deployer.address}]: {localState.counter}")
+
+    result = app_client.decrement()
+    logger.info(f"Decremented counter with result: {result.tx_id}")
+
+    localState = app_client.get_local_state(deployer.address)
+    logger.info(f"Local state for deployer account [{deployer.address}]: {localState.counter}")
